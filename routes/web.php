@@ -16,5 +16,5 @@ Route::get('/', function () {
 });
 
 Route::resource('/carts', 'CartController');
-Route::post('/carts/{order_id}', 'CartController@deleteOrder')->name('deleteOrder');
+Route::post('/carts/s', 'CartController@deleteOrder')->name('deleteOrder');
 Route::resource('/products', 'ProductController');

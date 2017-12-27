@@ -36,32 +36,7 @@
                                     <td>{{$order->order_quantity}}</td>
                                     <td>$ {{$order->order_total_price}}</td>
                                     {{--{{dd($data)}}--}}
-                                    <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit{{$order->order_id}}" ><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                                    {{-- Update Product Quantity Model --}}
-                                    <form action="{{route('carts.update',['order_id'=>$order->order_id, 'price'=>$order->product_price])}}" method="POST">
-                                        {{method_field('PUT')}}
-                                        {{csrf_field()}}
-                                        <div class="modal fade" id="edit{{$order->order_id}}" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                                                        <h4 class="modal-title custom_align" id="Heading">Edit Your Product Quantity</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-group">
-                                                            <input class="form-control" type="number" name="updateQuantity{{$order->order_id}}" placeholder="{{$order->order_quantity}}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer ">
-                                                        <button type="submit" class="btn btn-warning btn-lg" style="width: 100%;"><span class="glyphicon glyphicon-ok-sign"></span> Update</button>
-                                                    </div>
-                                                </div>
-                                                <!-- /.modal-content -->
-                                            </div>
-                                            <!-- /.modal-dialog -->
-                                        </div>
-                                    </form>
+                                    <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button onclick="setUpdateData({{$order->order_id}}, {{$order->product_price}})" class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit" ><span class="glyphicon glyphicon-pencil"></span></button></p></td>
 
                                     <form action="{{route('deleteOrder',['order_id'=>$order->order_id])}}" method="POST">
                                         {{method_field('DELETE')}}
@@ -81,6 +56,40 @@
     @empty
         <div class="alert alert-info">NO Carts</div>
     @endforelse
+    <script type="text/javascript">
+        function setUpdateData(id, price){
+            document.getElementById('updateOrderId').setAttribute('value', id);
+            document.getElementById('updateOrderPrice').value = price;
+        }
+    </script>
+    {{-- Update Product Quantity Model --}}
+    {{--,['order_id'=>$update_order_id, 'price'=>$update_order_price])--}}
+    <form action="{{route('carts.update',["order_id"=>1])}}" method="POST">
+        {{method_field('PUT')}}
+        {{csrf_field()}}
+        <input class="hidden" id="updateOrderId" name="updateOrderId" value="0">
+        <input class="hidden" id="updateOrderPrice" name="updateOrderPrice" value="0">
+        <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                        <h4 class="modal-title custom_align" id="Heading">Edit Your Product Quantity</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input class="form-control" type="number" name="updateQuantity" placeholder="1">
+                        </div>
+                    </div>
+                    <div class="modal-footer ">
+                        <button type="submit" class="btn btn-warning btn-lg" style="width: 100%;"><span class="glyphicon glyphicon-ok-sign"></span> Update</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+    </form>
 
     {{-- Create New Cart --}}
     <form action="{{route('carts.create')}}">

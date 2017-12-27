@@ -66,14 +66,34 @@ class CartController extends Controller
             'cart_id' => 'required:carts'
         ]);
 
-        //store
+//        Store
         $data = $request->all();
-        $order = new Order;
-        $order->cart_id = $data['cart_id'];
-        $order->order_quantity = 1;
-        $order->order_total_price = $data['price'];
-        $order->product_id = $data['product_id'];
-        $order->save();
+        $row = Order::where('cart_id',$data['cart_id'])->
+                          where('product_id',$data['product_id'])
+                          ->get();
+        if($row ->count()){
+//            Just update the quantity and total price because it already exist.
+            $total = (int)$row[0]->order_total_price + (int)$data['price'];
+
+            $order = Order::where('order_id','=',$row[0]->order_id);
+//            $order->order_quantity = $row[0]->order_quantity + 1;
+//            $order->order_total_price = $total;
+//            $order->update();
+            DB::table('orders')
+                ->where('order_id', $row[0]->order_id)
+                ->update(['order_quantity' => $row[0]->order_quantity + 1,
+                    'order_total_price' => $total]);
+        }else{
+//            Add New Item To Database
+            $order = new Order;
+            $order->cart_id = $data['cart_id'];
+            $order->order_quantity = 1;
+            $order->order_total_price = $data['price'];
+            $order->product_id = $data['product_id'];
+            $order->save();
+        }
+
+
         // redirect
         return back();
     }
@@ -109,7 +129,6 @@ class CartController extends Controller
      */
     public function update(Request $request, $id)
     {
-        dd($id);
         //validation
         $request->validate([
 //            'cart_id' => 'required:carts',
@@ -118,12 +137,15 @@ class CartController extends Controller
 
         //store
         $data=$request->all();
-        $total = (float)$data['price'] * $data["updateQuantity$id"];
-
-        $order = Order::where('cart_id',$id);
-        $order->order_quantity = $data["updateQuantity$id"];
-        $order->order_total_price = $total;
-        $order->update();
+        $total = (float)$data['updateOrderPrice'] * $data["updateQuantity"];
+//        $order = Order::where('cart_id',$id);
+//        $order->order_quantity = $data["updateQuantity$id"];
+//        $order->order_total_price = $total;
+//        $order->update();
+        DB::table('orders')
+            ->where('order_id', $data['updateOrderId'])
+            ->update(['order_quantity' => $data["updateQuantity"],
+                'order_total_price' => $total]);
 
         //redirect
         return back();
